@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  db-postgres-personal-finances:
+    image: postgres:alpine
+    ports:
+      - "5435:5432"
+    container_name: "db-postgres-personal-finances"
+    restart: always
+    volumes:
+      - ./database-personal-finances:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+volumes:
+  database-personal-finances:

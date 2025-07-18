@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Models
+
+model House {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(255)
+  users     User[]
+  incomes   Income[]
+  expenses  Expense[]
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(255)
+  email     String    @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  incomes   Income[]
+  expenses  Expense[]
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+
+  house_id Int
+  house    House @relation(fields: [house_id], references: [id])
+}
+
+model Category {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  percentage Decimal   @default(0) @db.Decimal(9, 2)
+  order      Int       @default(0)
+  incomes    Income[]
+  expenses   Expense[]
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime  @updatedAt
+}
+
+enum PaymentMethod {
+  BankSlip
+  CreditCard
+  DebitCard
+  Check
+  Cash
+  BankPayment
+  Courtesy
+  Voucher
+  Agreement
+}
+
+model Income {
+  id             Int           @id @default(autoincrement())
+  description    String        @db.VarChar(255)
+  due_date       DateTime      @db.Timestamp(6)
+  amount         Decimal       @db.Decimal(9, 2)
+  payment_method PaymentMethod
+  createdAt      DateTime      @db.Timestamp(6)
+  updatedAt      DateTime      @updatedAt
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+
+  house_id Int
+  house    House @relation(fields: [house_id], references: [id])
+
+  category_id Int
+  category    Category @relation(fields: [category_id], references: [id])
+}
+
+model Expense {
+  id             Int           @id @default(autoincrement())
+  description    String        @db.VarChar(255)
+  due_date       DateTime      @db.Timestamp(6)
+  amount         Decimal       @db.Decimal(9, 2)
+  payment_method PaymentMethod
+  is_paid        Boolean
+  paid_amount    Decimal?      @db.Decimal(9, 2)
+  payment_date   DateTime?     @db.Timestamp(6)
+  discount       Decimal?      @db.Decimal(9, 2)
+  fees           Decimal?      @db.Decimal(9, 2)
+  createdAt      DateTime      @db.Timestamp(6)
+  updatedAt      DateTime      @updatedAt
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+
+  house_id Int
+  house    House @relation(fields: [house_id], references: [id])
+
+  category_id Int
+  category    Category @relation(fields: [category_id], references: [id])
+}
