@@ -13,3 +13,13 @@ export const getAll = async () => {
 
     return houses;
 }
+
+export const getById = async (id) => {
+    const house = await prisma.house.findUnique({
+        where: {
+            id
+        }
+    });
+
+    return house;
+}

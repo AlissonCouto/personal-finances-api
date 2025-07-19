@@ -1,4 +1,4 @@
-import { createHouse, getAll } from '../repositories/house.repository.js';
+import { createHouse, getAll, getById } from '../repositories/house.repository.js';
 import { houseValidation } from '../validations/house.validation.js';
 
 export const create = async (req, res) => {
@@ -22,7 +22,6 @@ export const create = async (req, res) => {
             data: house
         });
     } catch (err) {
-        console.log('ERRO: ', err);
         res.status(400).send({
             success: false,
             message: "Erro ao tentar cadastrar casa",
@@ -41,10 +40,28 @@ export const get = async (req, res) => {
             data: houses
         });
     } catch (err) {
-        console.log('ERRO: ', err);
         res.status(400).send({
             success: false,
             message: "Erro na listagem de casas",
+            data: err
+        });
+    }
+}
+
+export const getId = async (req, res) => {
+    try {
+        const house = await getById(Number(req.params.id));
+
+        res.status(200).send({
+            success: true,
+            message: "Casa retornada com sucesso",
+            data: house
+        });
+    } catch (err) {
+        console.log('ERRO: ', err);
+        res.status(400).send({
+            success: false,
+            message: "Erro ao consultar casa",
             data: err
         });
     }
