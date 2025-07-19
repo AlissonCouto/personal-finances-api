@@ -7,3 +7,9 @@ export const createHouse = async (data) => {
 
     return house;
 }
+
+export const getAll = async () => {
+    const houses = await prisma.house.findMany({});
+
+    return houses;
+}
