@@ -1,4 +1,4 @@
-import { createHouse, getAll, getById, updateHouse } from '../repositories/house.repository.js';
+import { createHouse, getAll, getById, updateHouse, deleteHouse } from '../repositories/house.repository.js';
 import { houseValidation } from '../validations/house.validation.js';
 
 export const create = async (req, res) => {
@@ -76,10 +76,27 @@ export const update = async (req, res) => {
             data: house
         });
     } catch (err) {
-        console.log('ERRO: ', err);
         res.status(400).send({
             success: false,
             message: "Erro ao atualizar casa",
+            data: err
+        });
+    }
+}
+
+export const remove = async (req, res) => {
+    try {
+        await deleteHouse(Number(req.params.id));
+
+        res.status(200).send({
+            success: true,
+            message: "Casa deletada com sucesso",
+            data: {}
+        });
+    } catch (err) {
+        res.status(400).send({
+            success: false,
+            message: "Erro ao deletar casa",
             data: err
         });
     }

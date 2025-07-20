@@ -34,3 +34,13 @@ export const updateHouse = async (id, data) => {
 
     return house;
 }
+
+export const deleteHouse = async (id) => {
+    await prisma.house.delete({
+        where: {
+            id
+        }
+    });
+
+    return;
+}
