@@ -23,3 +23,14 @@ export const getById = async (id) => {
 
     return house;
 }
+
+export const updateHouse = async (id, data) => {
+    const house = await prisma.house.update({
+        where: {
+            id
+        },
+        data
+    });
+
+    return house;
+}
