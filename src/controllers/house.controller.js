@@ -68,6 +68,16 @@ export const getId = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
+        const { error, value } = houseValidation.validate(req.body);
+
+        if (error) {
+            return res.status(400).send({
+                success: false,
+                message: "Erro de validação",
+                data: error.details
+            });
+        }
+
         const house = await updateHouse(Number(req.params.id), req.body);
 
         res.status(200).send({
