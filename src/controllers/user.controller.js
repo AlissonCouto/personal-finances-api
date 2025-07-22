@@ -1,4 +1,4 @@
-import { createUser, getAll, getById, updateUser } from '../repositories/user.repository.js';
+import { createUser, getAll, getById, updateUser, deleteUser } from '../repositories/user.repository.js';
 import { userValidation, userUpdateValidation } from '../validations/user.validation.js';
 import { getById as houseById } from '../repositories/house.repository.js';
 import { hashPassword } from '../utils/hashPassword.js';
@@ -24,7 +24,7 @@ export const create = async (req, res) => {
             });
         }
 
-        req.body.password = await hasPassword(req.body.password);
+        req.body.password = await hashPassword(req.body.password);
 
         const user = await createUser(req.body);
 
@@ -131,10 +131,36 @@ export const update = async (req, res) => {
             data: user
         });
     } catch (err) {
-        console.log('LOG ', err);
         return res.status(400).send({
             success: false,
             message: "Erro ao atualizar usuário",
+            data: err
+        });
+    }
+}
+
+export const remove = async (req, res) => {
+    try {
+        const userId = Number(req.params.id);
+        const user = await getById(userId);
+
+        if (!user) {
+            return res.status(404).send({
+                success: true,
+                message: "Usuário não encontrado"
+            });
+        }
+
+        await deleteUser(userId);
+
+        return res.status(200).send({
+            success: true,
+            message: "Usuário deletado com sucesso"
+        });
+    } catch (err) {
+        return res.status(400).send({
+            success: false,
+            message: "Erro ao deletar usuário",
             data: err
         });
     }
