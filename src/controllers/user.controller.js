@@ -1,4 +1,4 @@
-import { createUser, getAll } from '../repositories/user.repository.js';
+import { createUser, getAll, getById } from '../repositories/user.repository.js';
 import { userValidation } from '../validations/user.validation.js';
 import { getById as houseById } from '../repositories/house.repository.js';
 import bcrypt from 'bcrypt';
@@ -58,6 +58,24 @@ export const get = async (req, res) => {
         res.status(400).send({
             success: false,
             message: "Erro na listagem de usuários",
+            data: err
+        });
+    }
+}
+
+export const getId = async (req, res) => {
+    try {
+        const user = await getById(Number(req.params.id));
+
+        res.status(200).send({
+            success: true,
+            message: "Usuário retornado com sucesso",
+            data: user
+        });
+    } catch (err) {
+        res.status(400).send({
+            success: false,
+            message: "Erro ao consultar usuário",
             data: err
         });
     }

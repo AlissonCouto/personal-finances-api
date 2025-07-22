@@ -15,3 +15,13 @@ export const getAll = async () => {
 
     return users;
 }
+
+export const getById = async (id) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            id
+        }
+    });
+
+    return user;
+}
