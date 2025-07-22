@@ -2,40 +2,35 @@ import { createUser, getAll, getById, updateUser, deleteUser } from '../reposito
 import { userValidation, userUpdateValidation } from '../validations/user.validation.js';
 import { getById as houseById } from '../repositories/house.repository.js';
 import { hashPassword } from '../utils/hashPassword.js';
+import { verifyExistence } from '../utils/exists.js';
 
 export const create = async (req, res) => {
     try {
         const { error, value } = userValidation.validate(req.body);
 
         if (error) {
-            res.status(400).send({
+            return res.status(400).send({
                 success: false,
                 message: "Erro de validação",
                 data: error.details
             });
         }
 
-        const house = await houseById(req.body.house_id);
-
-        if (!house) {
-            return res.status(404).json({
-                success: false,
-                message: "Casa não encontrada",
-            });
-        }
+        const house = await verifyExistence(res, houseById, req.body.house_id, "Casa não encontrada");
+        if (!house) return;
 
         req.body.password = await hashPassword(req.body.password);
 
         const user = await createUser(req.body);
 
-        res.status(201).send({
+        return res.status(201).send({
             success: true,
             message: "Usuário cadastrado com sucesso",
             data: user
         });
 
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro ao tentar cadastrar usuário",
             data: err
@@ -47,13 +42,13 @@ export const get = async (req, res) => {
     try {
         const users = await getAll();
 
-        res.status(200).send({
+        return res.status(200).send({
             success: true,
             message: "Usuários retornados com sucesso",
             data: users
         });
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro na listagem de usuários",
             data: err
@@ -63,15 +58,18 @@ export const get = async (req, res) => {
 
 export const getId = async (req, res) => {
     try {
-        const user = await getById(Number(req.params.id));
+        const userId = Number(req.params.id);
 
-        res.status(200).send({
+        const user = await verifyExistence(res, getById, userId, "Usuário não encontrado");
+        if (!user) return;
+
+        return res.status(200).send({
             success: true,
             message: "Usuário retornado com sucesso",
             data: user
         });
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro ao consultar usuário",
             data: err
@@ -82,14 +80,10 @@ export const getId = async (req, res) => {
 export const update = async (req, res) => {
     try {
 
-        const userExist = await getById(Number(req.params.id));
+        const userId = Number(req.params.id);
 
-        if (!userExist) {
-            return res.status(404).send({
-                success: false,
-                message: "Usuário não encontrado",
-            });
-        }
+        const exist = await verifyExistence(res, getById, userId, "Usuário não encontrado");
+        if (!exist) return;
 
         if (Object.keys(req.body).length === 0) {
             return res.status(400).json({
@@ -109,21 +103,15 @@ export const update = async (req, res) => {
         }
 
         if (req.body.house_id) {
-            const house = await houseById(req.body.house_id);
-
-            if (!house) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Casa não encontrada",
-                });
-            }
+            const house = await verifyExistence(res, houseById, req.body.house_id, "Casa não encontrada");
+            if (!house) return;
         }
 
         if (req.body.password) {
             req.body.password = await hashPassword(req.body.password);
         }
 
-        const user = await updateUser(Number(req.params.id), req.body);
+        const user = await updateUser(userId, req.body);
 
         return res.status(200).send({
             success: true,
@@ -142,14 +130,9 @@ export const update = async (req, res) => {
 export const remove = async (req, res) => {
     try {
         const userId = Number(req.params.id);
-        const user = await getById(userId);
 
-        if (!user) {
-            return res.status(404).send({
-                success: true,
-                message: "Usuário não encontrado"
-            });
-        }
+        let user = await verifyExistence(res, getById, userId, "Usuário não encontrado");
+        if (!user) return;
 
         await deleteUser(userId);
 

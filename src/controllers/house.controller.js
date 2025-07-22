@@ -1,5 +1,6 @@
 import { createHouse, getAll, getById, updateHouse, deleteHouse } from '../repositories/house.repository.js';
 import { houseValidation } from '../validations/house.validation.js';
+import { verifyExistence } from '../utils/exists.js';
 
 export const create = async (req, res) => {
     try {
@@ -16,13 +17,13 @@ export const create = async (req, res) => {
 
         const house = await createHouse(req.body);
 
-        res.status(201).send({
+        return res.status(201).send({
             success: true,
             message: "Casa cadastrada com sucesso",
             data: house
         });
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro ao tentar cadastrar casa",
             data: err
@@ -34,13 +35,13 @@ export const get = async (req, res) => {
     try {
         const houses = await getAll();
 
-        res.status(200).send({
+        return res.status(200).send({
             success: true,
             message: "Casas retornadas com sucesso",
             data: houses
         });
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro na listagem de casas",
             data: err
@@ -50,15 +51,18 @@ export const get = async (req, res) => {
 
 export const getId = async (req, res) => {
     try {
-        const house = await getById(Number(req.params.id));
 
-        res.status(200).send({
+        const houseId = Number(req.params.id);
+        const house = await verifyExistence(res, getById, houseId, "Casa não encontrada");
+        if (!house) return;
+
+        return res.status(200).send({
             success: true,
             message: "Casa retornada com sucesso",
             data: house
         });
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro ao consultar casa",
             data: err
@@ -68,6 +72,10 @@ export const getId = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
+        const houseId = Number(req.params.id);
+        const houseExist = await verifyExistence(res, getById, houseId, "Casa não encontrada");
+        if (!houseExist) return;
+
         const { error, value } = houseValidation.validate(req.body);
 
         if (error) {
@@ -78,15 +86,15 @@ export const update = async (req, res) => {
             });
         }
 
-        const house = await updateHouse(Number(req.params.id), req.body);
+        const house = await updateHouse(houseId, req.body);
 
-        res.status(200).send({
+        return res.status(200).send({
             success: true,
             message: "Casa alterada com sucesso",
             data: house
         });
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro ao atualizar casa",
             data: err
@@ -96,15 +104,26 @@ export const update = async (req, res) => {
 
 export const remove = async (req, res) => {
     try {
-        await deleteHouse(Number(req.params.id));
+        const houseId = Number(req.params.id);
 
-        res.status(200).send({
+        const houseExist = await verifyExistence(res, getById, houseId, "Casa não encontrada");
+        if (!houseExist) return;
+
+        if (!house) {
+            return res.status(404).send({
+                success: false,
+                message: "Casa não encontrada"
+            });
+        }
+
+        await deleteHouse(houseId);
+
+        return res.status(200).send({
             success: true,
-            message: "Casa deletada com sucesso",
-            data: {}
+            message: "Casa deletada com sucesso"
         });
     } catch (err) {
-        res.status(400).send({
+        return res.status(400).send({
             success: false,
             message: "Erro ao deletar casa",
             data: err
