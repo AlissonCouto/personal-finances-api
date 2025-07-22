@@ -9,3 +9,9 @@ export const createUser = async (data) => {
 
     return user;
 }
+
+export const getAll = async () => {
+    const users = await prisma.user.findMany({});
+
+    return users;
+}

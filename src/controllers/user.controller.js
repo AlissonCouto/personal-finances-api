@@ -1,4 +1,4 @@
-import { createUser } from '../repositories/user.repository.js';
+import { createUser, getAll } from '../repositories/user.repository.js';
 import { userValidation } from '../validations/user.validation.js';
 import { getById as houseById } from '../repositories/house.repository.js';
 import bcrypt from 'bcrypt';
@@ -37,10 +37,27 @@ export const create = async (req, res) => {
         });
 
     } catch (err) {
-        console.log(err);
         res.status(400).send({
             success: false,
             message: "Erro ao tentar cadastrar usuário",
+            data: err
+        });
+    }
+}
+
+export const get = async (req, res) => {
+    try {
+        const users = await getAll();
+
+        res.status(200).send({
+            success: true,
+            message: "Usuários retornados com sucesso",
+            data: users
+        });
+    } catch (err) {
+        res.status(400).send({
+            success: false,
+            message: "Erro na listagem de usuários",
             data: err
         });
     }
