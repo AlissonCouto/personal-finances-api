@@ -25,3 +25,12 @@ export const getById = async (id) => {
 
     return category;
 }
+
+export const updateCategory = async (id, data) => {
+    const category = await prisma.category.update({
+        where: { id },
+        data
+    });
+
+    return category;
+}
