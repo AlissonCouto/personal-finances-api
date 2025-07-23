@@ -15,7 +15,7 @@ export const create = async (req, res) => {
             });
         }
 
-        const house = await createHouse(req.body);
+        const house = await createHouse(value);
 
         return res.status(201).send({
             success: true,
@@ -23,7 +23,7 @@ export const create = async (req, res) => {
             data: house
         });
     } catch (err) {
-        return res.status(400).send({
+        return res.status(500).send({
             success: false,
             message: "Erro ao tentar cadastrar casa",
             data: err
@@ -41,7 +41,7 @@ export const get = async (req, res) => {
             data: houses
         });
     } catch (err) {
-        return res.status(400).send({
+        return res.status(500).send({
             success: false,
             message: "Erro na listagem de casas",
             data: err
@@ -62,7 +62,7 @@ export const getId = async (req, res) => {
             data: house
         });
     } catch (err) {
-        return res.status(400).send({
+        return res.status(500).send({
             success: false,
             message: "Erro ao consultar casa",
             data: err
@@ -86,7 +86,7 @@ export const update = async (req, res) => {
             });
         }
 
-        const house = await updateHouse(houseId, req.body);
+        const house = await updateHouse(houseId, value);
 
         return res.status(200).send({
             success: true,
@@ -94,7 +94,7 @@ export const update = async (req, res) => {
             data: house
         });
     } catch (err) {
-        return res.status(400).send({
+        return res.status(500).send({
             success: false,
             message: "Erro ao atualizar casa",
             data: err
@@ -109,13 +109,6 @@ export const remove = async (req, res) => {
         const houseExist = await verifyExistence(res, getById, houseId, "Casa não encontrada");
         if (!houseExist) return;
 
-        if (!house) {
-            return res.status(404).send({
-                success: false,
-                message: "Casa não encontrada"
-            });
-        }
-
         await deleteHouse(houseId);
 
         return res.status(200).send({
@@ -123,7 +116,7 @@ export const remove = async (req, res) => {
             message: "Casa deletada com sucesso"
         });
     } catch (err) {
-        return res.status(400).send({
+        return res.status(500).send({
             success: false,
             message: "Erro ao deletar casa",
             data: err

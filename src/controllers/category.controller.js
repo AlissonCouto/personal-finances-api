@@ -72,7 +72,7 @@ export const getId = async (req, res) => {
             data: category
         });
     } catch (err) {
-        return res.status(400).send({
+        return res.status(500).send({
             success: true,
             message: "Erro ao consultar categoria",
             data: err
