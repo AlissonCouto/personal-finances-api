@@ -43,4 +43,6 @@ export const deleteUser = async (id) => {
             id
         }
     });
+
+    return;
 }

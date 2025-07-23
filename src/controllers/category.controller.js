@@ -1,4 +1,4 @@
-import { createCategory, getAll, getById, updateCategory } from '../repositories/category.repository.js';
+import { createCategory, getAll, getById, updateCategory, deleteCategory } from '../repositories/category.repository.js';
 import { getById as userById } from '../repositories/user.repository.js';
 import { verifyExistence } from '../utils/exists.js';
 import { categoryValidation, categoryGetValidation, categoryUpdateValidation } from '../validations/category.validation.js';
@@ -170,6 +170,28 @@ export const update = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Erro ao atualizar categoria",
+            data: err
+        });
+    }
+}
+
+export const remove = async (req, res) => {
+    try {
+        const categoryId = Number(req.params.id);
+
+        const category = await verifyExistence(res, getById, categoryId, "Categoria não encontrada");
+        if (!category) return;
+
+        await deleteCategory(categoryId);
+
+        return res.status(200).send({
+            success: true,
+            message: "Categoria deletada com sucesso",
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            message: "Erro ao deletar categoria",
             data: err
         });
     }
