@@ -27,28 +27,33 @@ model House {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(255)
-  email     String    @unique @db.VarChar(255)
-  password  String    @db.VarChar(255)
-  incomes   Income[]
-  expenses  Expense[]
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime  @updatedAt
+  id         Int        @id @default(autoincrement())
+  name       String     @db.VarChar(255)
+  email      String     @unique @db.VarChar(255)
+  password   String     @db.VarChar(255)
+  categories Category[]
+  incomes    Income[]
+  expenses   Expense[]
+  createdAt  DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime   @updatedAt
 
   house_id Int
   house    House @relation(fields: [house_id], references: [id])
 }
 
 model Category {
-  id         Int       @id @default(autoincrement())
-  name       String    @db.VarChar(255)
-  percentage Decimal   @default(0) @db.Decimal(9, 2)
-  order      Int       @default(0)
-  incomes    Income[]
-  expenses   Expense[]
-  createdAt  DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime  @updatedAt
+  id         Int     @id @default(autoincrement())
+  name       String  @db.VarChar(255)
+  percentage Decimal @default(0) @db.Decimal(9, 2)
+  order      Int     @default(0)
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+
+  incomes   Income[]
+  expenses  Expense[]
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
 }
 
 enum PaymentMethod {
