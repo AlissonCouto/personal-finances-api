@@ -6,3 +6,7 @@ export const categoryValidation = Joi.object({
     order: Joi.number().integer().min(0).default(0),
     user_id: Joi.number().integer().required()
 });
+
+export const categoryGetValidation = Joi.object({
+    user_id: Joi.number().integer().required()
+});
