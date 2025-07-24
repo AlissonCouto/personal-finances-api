@@ -1,4 +1,4 @@
-import { createIncome, getAll } from '../repositories/income.repository.js';
+import { createIncome, getAll, getById } from '../repositories/income.repository.js';
 import { getById as userById } from '../repositories/user.repository.js';
 import { getById as categoryById } from '../repositories/category.repository.js';
 import { getById as houseById } from '../repositories/house.repository.js';
@@ -62,6 +62,27 @@ export const get = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Erro ao listar recetas",
+            data: err
+        });
+    }
+}
+
+export const getId = async (req, res) => {
+    try {
+        const incomeId = Number(req.params.id);
+
+        const income = await verifyExistence(res, getById, incomeId, "Receita não encontrada");
+        if (!income) return;
+
+        return res.status(200).send({
+            success: true,
+            message: "Receita retornada com sucesso",
+            data: income
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            message: "Erro ao consultar receita",
             data: err
         });
     }

@@ -33,3 +33,11 @@ export const getAll = async () => {
 
     return incomes;
 }
+
+export const getById = async (id) => {
+    const income = await prisma.income.findUnique({
+        where: { id }
+    });
+
+    return income;
+}
