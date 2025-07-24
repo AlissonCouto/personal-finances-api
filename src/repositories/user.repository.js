@@ -2,7 +2,17 @@ import { prisma } from '../services/prisma.js';
 
 export const createUser = async (data) => {
     const user = await prisma.user.create({
-        data,
+        data: {
+            name: data.name,
+            email: data.email,
+            password: data.password,
+
+            house: {
+                connect: {
+                    id: data.house_id
+                }
+            }
+        },
     });
 
     delete user.password;

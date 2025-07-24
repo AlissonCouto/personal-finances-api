@@ -2,7 +2,17 @@ import { prisma } from '../services/prisma.js';
 
 export const createCategory = async (data) => {
     const category = await prisma.category.create({
-        data
+        data: {
+            name: data.name,
+            percentage: data.percentage,
+            order: data.order,
+
+            user: {
+                connect: {
+                    id: data.user_id
+                }
+            }
+        }
     });
 
     return category;
