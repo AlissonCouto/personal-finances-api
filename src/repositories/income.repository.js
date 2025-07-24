@@ -27,3 +27,9 @@ export const createIncome = async (data) => {
 
     return income;
 }
+
+export const getAll = async () => {
+    const incomes = await prisma.income.findMany({});
+
+    return incomes;
+}
