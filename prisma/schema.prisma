@@ -74,14 +74,14 @@ model Income {
   due_date       DateTime      @db.Timestamp(6)
   amount         Decimal       @db.Decimal(9, 2)
   payment_method PaymentMethod
-  createdAt      DateTime      @db.Timestamp(6)
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
   updatedAt      DateTime      @updatedAt
 
   user_id Int
   user    User @relation(fields: [user_id], references: [id])
 
-  house_id Int
-  house    House @relation(fields: [house_id], references: [id])
+  house_id Int?
+  house    House? @relation(fields: [house_id], references: [id])
 
   category_id Int
   category    Category @relation(fields: [category_id], references: [id])
@@ -98,14 +98,14 @@ model Expense {
   payment_date   DateTime?     @db.Timestamp(6)
   discount       Decimal?      @db.Decimal(9, 2)
   fees           Decimal?      @db.Decimal(9, 2)
-  createdAt      DateTime      @db.Timestamp(6)
+  createdAt      DateTime      @default(now()) @db.Timestamp(6)
   updatedAt      DateTime      @updatedAt
 
   user_id Int
   user    User @relation(fields: [user_id], references: [id])
 
-  house_id Int
-  house    House @relation(fields: [house_id], references: [id])
+  house_id Int?
+  house    House? @relation(fields: [house_id], references: [id])
 
   category_id Int
   category    Category @relation(fields: [category_id], references: [id])

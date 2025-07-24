@@ -30,6 +30,7 @@ CREATE TABLE "Category" (
     "name" VARCHAR(255) NOT NULL,
     "percentage" DECIMAL(9,2) NOT NULL DEFAULT 0,
     "order" INTEGER NOT NULL DEFAULT 0,
+    "user_id" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -43,10 +44,10 @@ CREATE TABLE "Income" (
     "due_date" TIMESTAMP(6) NOT NULL,
     "amount" DECIMAL(9,2) NOT NULL,
     "payment_method" "PaymentMethod" NOT NULL,
-    "createdAt" TIMESTAMP(6) NOT NULL,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "house_id" INTEGER NOT NULL,
+    "house_id" INTEGER,
     "category_id" INTEGER NOT NULL,
 
     CONSTRAINT "Income_pkey" PRIMARY KEY ("id")
@@ -64,10 +65,10 @@ CREATE TABLE "Expense" (
     "payment_date" TIMESTAMP(6),
     "discount" DECIMAL(9,2),
     "fees" DECIMAL(9,2),
-    "createdAt" TIMESTAMP(6) NOT NULL,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "house_id" INTEGER NOT NULL,
+    "house_id" INTEGER,
     "category_id" INTEGER NOT NULL,
 
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
@@ -80,10 +81,13 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 ALTER TABLE "User" ADD CONSTRAINT "User_house_id_fkey" FOREIGN KEY ("house_id") REFERENCES "House"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Category" ADD CONSTRAINT "Category_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Income" ADD CONSTRAINT "Income_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Income" ADD CONSTRAINT "Income_house_id_fkey" FOREIGN KEY ("house_id") REFERENCES "House"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Income" ADD CONSTRAINT "Income_house_id_fkey" FOREIGN KEY ("house_id") REFERENCES "House"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Income" ADD CONSTRAINT "Income_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -92,7 +96,7 @@ ALTER TABLE "Income" ADD CONSTRAINT "Income_category_id_fkey" FOREIGN KEY ("cate
 ALTER TABLE "Expense" ADD CONSTRAINT "Expense_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Expense" ADD CONSTRAINT "Expense_house_id_fkey" FOREIGN KEY ("house_id") REFERENCES "House"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Expense" ADD CONSTRAINT "Expense_house_id_fkey" FOREIGN KEY ("house_id") REFERENCES "House"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Expense" ADD CONSTRAINT "Expense_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
