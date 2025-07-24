@@ -1,8 +1,8 @@
-import { createIncome, getAll, getById } from '../repositories/income.repository.js';
+import { createIncome, getAll, getById, updateIncome } from '../repositories/income.repository.js';
 import { getById as userById } from '../repositories/user.repository.js';
 import { getById as categoryById } from '../repositories/category.repository.js';
 import { getById as houseById } from '../repositories/house.repository.js';
-import { incomeValidation } from '../validations/income.validation.js';
+import { incomeValidation, incomeUpdateValidation } from '../validations/income.validation.js';
 import { verifyExistence } from '../utils/exists.js';
 
 export const create = async (req, res) => {
@@ -83,6 +83,51 @@ export const getId = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Erro ao consultar receita",
+            data: err
+        });
+    }
+}
+
+export const update = async (req, res) => {
+    try {
+        const incomeId = Number(req.params.id);
+        const incomeExist = await verifyExistence(res, getById, incomeId, "Receita não encontrada");
+        if (!incomeExist) return;
+
+        const { error, value } = incomeUpdateValidation.validate(req.body);
+        if (error) {
+            return res.status(400).send({
+                success: false,
+                message: "Erro de validação",
+                data: error.details
+            });
+        }
+
+        // Verificando existencia de categoria
+        const categoryId = Number(value.category_id);
+        if (categoryId) {
+            const category = await verifyExistence(res, categoryById, categoryId, "Categoria não encontrada");
+            if (!category) return;
+        }
+
+        // Verificando existencia de casa se informada
+        if (value.house_id) {
+            const houseId = Number(value.house_id);
+            const house = await verifyExistence(res, houseById, houseId, "Casa não encontrada");
+            if (!house) return;
+        }
+
+        const income = await updateIncome(incomeId, value);
+
+        return res.status(200).send({
+            success: true,
+            message: "Receita atualizada com sucesso",
+            data: income
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            message: "Erro ao atualizar receita",
             data: err
         });
     }
