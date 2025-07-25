@@ -1,4 +1,4 @@
-import { createIncome, getAll, getById, updateIncome } from '../repositories/income.repository.js';
+import { createIncome, getAll, getById, updateIncome, deleteIncome } from '../repositories/income.repository.js';
 import { getById as userById } from '../repositories/user.repository.js';
 import { getById as categoryById } from '../repositories/category.repository.js';
 import { getById as houseById } from '../repositories/house.repository.js';
@@ -128,6 +128,27 @@ export const update = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Erro ao atualizar receita",
+            data: err
+        });
+    }
+}
+
+export const remove = async (req, res) => {
+    try {
+        const incomeId = Number(req.params.id);
+        const income = await verifyExistence(res, getById, incomeId, "Receita não encontrada");
+        if (!income) return;
+
+        await deleteIncome(incomeId);
+
+        return res.status(200).send({
+            success: true,
+            message: "Receita deletada com sucesso",
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            message: "Erro ao deletar receita",
             data: err
         });
     }
