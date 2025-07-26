@@ -1,4 +1,4 @@
-import { createExpense } from '../repositories/expense.repository.js';
+import { createExpense, getAll } from '../repositories/expense.repository.js';
 import { getById as userById } from '../repositories/user.repository.js';
 import { getById as categoryById } from '../repositories/category.repository.js';
 import { getById as houseById } from '../repositories/house.repository.js';
@@ -44,6 +44,24 @@ export const create = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Erro ao cadastrar despesa",
+            data: err
+        });
+    }
+}
+
+export const get = async (req, res) => {
+    try {
+        const expenses = await getAll();
+
+        return res.status(200).send({
+            success: true,
+            message: "Despesas retornadas com sucesso",
+            data: expenses
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            message: "Erro ao listar despesas",
             data: err
         });
     }

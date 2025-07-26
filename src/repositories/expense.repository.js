@@ -38,3 +38,9 @@ export const createExpense = async (data) => {
 
     return expense;
 }
+
+export const getAll = async () => {
+    const expenses = await prisma.expense.findMany({});
+
+    return expenses;
+}
