@@ -1,4 +1,4 @@
-import { createExpense, getAll, getById, updateExpense } from '../repositories/expense.repository.js';
+import { createExpense, getAll, getById, updateExpense, deleteExpense } from '../repositories/expense.repository.js';
 import { getById as userById } from '../repositories/user.repository.js';
 import { getById as categoryById } from '../repositories/category.repository.js';
 import { getById as houseById } from '../repositories/house.repository.js';
@@ -128,6 +128,27 @@ export const update = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Erro ao atualizar despesa",
+            data: err
+        });
+    }
+}
+
+export const remove = async (req, res) => {
+    try {
+        const expenseId = Number(req.params.id);
+        const expense = await verifyExistence(res, getById, expenseId, "Despesa não encontrada");
+        if (!expense) return;
+
+        await deleteExpense(expenseId);
+
+        return res.status(200).send({
+            success: true,
+            message: "Despesa deletada com sucesso",
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            message: "Erro ao deletar despesa",
             data: err
         });
     }

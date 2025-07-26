@@ -83,3 +83,11 @@ export const updateExpense = async (id, data) => {
 
     return expense;
 };
+
+export const deleteExpense = async (id) => {
+    await prisma.expense.delete({
+        where: { id }
+    });
+
+    return;
+}
