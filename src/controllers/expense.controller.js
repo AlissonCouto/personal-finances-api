@@ -1,4 +1,4 @@
-import { createExpense, getAll } from '../repositories/expense.repository.js';
+import { createExpense, getAll, getById } from '../repositories/expense.repository.js';
 import { getById as userById } from '../repositories/user.repository.js';
 import { getById as categoryById } from '../repositories/category.repository.js';
 import { getById as houseById } from '../repositories/house.repository.js';
@@ -62,6 +62,27 @@ export const get = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Erro ao listar despesas",
+            data: err
+        });
+    }
+}
+
+export const getId = async (req, res) => {
+    try {
+        const expenseId = Number(req.params.id);
+
+        const expense = await verifyExistence(res, getById, expenseId, "Despesa não encontrada");
+        if (!expense) return;
+
+        return res.status(200).send({
+            success: true,
+            message: "Despesa retornada com sucesso",
+            data: expense
+        });
+    } catch (err) {
+        return res.status(500).send({
+            success: false,
+            message: "Erro ao consultar despesa",
             data: err
         });
     }

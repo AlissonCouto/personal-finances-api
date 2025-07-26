@@ -44,3 +44,11 @@ export const getAll = async () => {
 
     return expenses;
 }
+
+export const getById = async (id) => {
+    const expense = await prisma.expense.findUnique({
+        where: { id }
+    });
+
+    return expense;
+}
